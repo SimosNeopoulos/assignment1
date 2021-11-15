@@ -1,43 +1,59 @@
 #! /usr/bin/bash
 
+#Bubble Sort function
 function bubble_sort()
 {   
-    local max=${#NUM_ARRAY[@]}
-    size=${#NUM_ARRAY[@]}
-    while ((max > 0))
+    local MAX=${#NUM_ARRAY[@]}
+    SIZE=${#NUM_ARRAY[@]}
+    while ((MAX > 0))
     do
         local i=0
-        while ((i < max))
+        while ((i < MAX))
         do
-            if [ "$i" != "$(($size-1))" ] #array will not be out of bound
+            if [ "$i" != "$(($SIZE-1))" ] 
             then
                 if [ ${NUM_ARRAY[$i]} \< ${NUM_ARRAY[$((i + 1))]} ]
                    then
-                   local t=${NUM_ARRAY[$i]}
+                   local TEMP=${NUM_ARRAY[$i]}
                    NUM_ARRAY[$i]=${NUM_ARRAY[$((i + 1))]}
-                   NUM_ARRAY[$((i + 1))]=$t
+                   NUM_ARRAY[$((i + 1))]=$TEMP
                     
-                   local tf=${WORD_ARRAY[$i]}
+                   local TEMP2=${WORD_ARRAY[$i]}
                    WORD_ARRAY[$i]=${WORD_ARRAY[$((i + 1))]}
-                  WORD_ARRAY[$((i + 1))]=$tf
+                  WORD_ARRAY[$((i + 1))]=$TEMP2
                  fi
              fi
             ((i += 1))
         done
-        ((max -= 1))
+        ((MAX -= 1))
     done
 }
 
+#Stores the words of the file without dublicates
+WORDS="$(grep -o -E '\w+' $1 | sort -u -f)"
 
-WORDS="$(grep -o -E '\w+' test.txt | sort -u -f)"
-
+#Array that will contain the words
 WORD_ARRAY=()
+#Array that will contain the number of appearnces for each word 
 NUM_ARRAY=()
 
+#Accessing all the words from the file
 for WORD in $WORDS
 do
-    APEARENCES="$(grep -o -i "$WORD" test.txt | wc -l)"
+    #Number of apperences of the WORD in the text file ($1)
+    APEARENCES="$(grep -o -i "$WORD" $1 | wc -l)"
+
+    #Appending each word and the number of it's appearnces
+    #to the coresponding array
     WORD_ARRAY+=( $WORD )
     NUM_ARRAY+=( $APEARENCES )
 done
+
+#Sorting the arrays
 bubble_sort "${NUM_ARRAY[@]}" "${WORD_ARRAY[@]}"
+
+#Printing the top ($2) words with most appearences
+for((i=0; i<$2; i++))
+do
+    echo "${NUM_ARRAY[$i]} ${WORD_ARRAY[$i]}"
+done
