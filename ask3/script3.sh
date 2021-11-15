@@ -54,7 +54,7 @@ fi
 
 
 # Stores the words of the file without duplicates
-WORDS=`grep -o -E '\w+' $1 | sort -u -f`
+WORDS=$(grep -o -E "(\w|')+" $1 | sed -e "s/'.*\$//" | sort -u -f)
 
 # Array that will contain the words
 WORD_ARRAY=()
@@ -76,8 +76,16 @@ done
 # Sorting the arrays
 bubble_sort "${NUM_ARRAY[@]}" "${WORD_ARRAY[@]}"
 
-# Printing the top ($2) words with most appearences
-for((i=0; i<$2; i++))
+# Printing the top ($LEN) words with most appearences
+if [ $2 -lt ${#WORD_ARRAY[@]} ]
+then
+    LEN=$2
+else
+    LEN=${#WORD_ARRAY[@]}
+    
+fi
+
+for ((i=0; i<$LEN; i++))
 do
     echo "${NUM_ARRAY[$i]} ${WORD_ARRAY[$i]}"
 done
