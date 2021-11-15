@@ -2,41 +2,67 @@
 
 # Bubble Sort function
 function bubble_sort {   
-    local MAX=${#NUM_ARRAY[@]}
-    SIZE=${#NUM_ARRAY[@]}
-    while ((MAX > 0))
+    local max=${#numArray[@]}
+    size=${#numArray[@]}
+    while ((max > 0))
     do
         local i=0
-        while ((i < MAX))
+        while ((i < max))
         do
-            if [ "$i" != "$(($SIZE-1))" ] 
+            if [ "$i" != "$(($size-1))" ] 
             then
-                if [ ${NUM_ARRAY[$i]} \< ${NUM_ARRAY[$((i + 1))]} ]
+                if [ ${numArray[$i]} \< ${numArray[$((i + 1))]} ]
                    then
-                   local TEMP=${NUM_ARRAY[$i]}
-                   NUM_ARRAY[$i]=${NUM_ARRAY[$((i + 1))]}
-                   NUM_ARRAY[$((i + 1))]=$TEMP
+                   local temp=${numArray[$i]}
+                   numArray[$i]=${numArray[$((i + 1))]}
+                   numArray[$((i + 1))]=$temp
                     
-                   local TEMP2=${WORD_ARRAY[$i]}
-                   WORD_ARRAY[$i]=${WORD_ARRAY[$((i + 1))]}
-                  WORD_ARRAY[$((i + 1))]=$TEMP2
+                   local temp2=${wordArray[$i]}
+                   wordArray[$i]=${wordArray[$((i + 1))]}
+                  wordArray[$((i + 1))]=$temp2
                  fi
              fi
             ((i += 1))
         done
-        ((MAX -= 1))
+        ((max -= 1))
     done
 }
 
+#function bubble_sort {
+#    local size=${#numArray[@]}
+#    for ((i=0; i<$((size-1)); i++ ))
+#    do
+#        for ((j=0; j<$((size-i-1)); j++))
+#        do
+#            if [ ${numArray[$j]} \< ${numArray[$((j + 1))]} ]
+#            then
+#                local temp=${numArray[$j]}
+#                numArray[$j]=${numArray[$((j + 1))]}
+#                numArray[$((j + 1))]=$temp#
+#
+#                local temp2=${wordArray[$j]}
+#                wordArray[$j]=${wordArray[$((j + 1))]}
+ #               wordArray[$((j + 1))]=$temp2
+ ##           fi
+#        done
+ #   done
+#}
+
 # Function that prints help message to command line and then terminates the program
-function help() {
-    echo "Help script to write"
+function help {
+    echo "To excecute this script, provide the name of the text file,"
+    echo "you want to access and the number of the words that you"
+    echo "wish to see."
+    echo "It should look like this:"
+    echo
+    echo "./script3.sh text.txt 8"
+    echo
     exit 0
 }
 
 
 # Checks wheter the user is asking for help
-if [ "$1" == "-h" ]
+if [ "$1" == "-h" ] || [ "$1" == "--help" ] 
 then
     help
     exit 0
@@ -53,52 +79,54 @@ then
 fi
 
 # Start reading the file
-START="*** START OF THIS PROJECT GUTENBERG EBOOK"
+start="*** START OF THIS PROJECT GUTENBERG EBOOK"
 
 # Stop reading the file
-END="*** END OF THIS PROJECT GUTENBERG EBOOK"
+end="*** END OF THIS PROJECT GUTENBERG EBOOK"
 
-FIRST_LINE="$(grep -n "$START" $1 | head -n 1 | cut -d: -f1)"
-LAST_LINE="$(grep -n "$END" $1 | head -n 1 | cut -d: -f1)"
-awk -v a=$FIRST_LINE -v b=$LAST_LINE 'NR==a+1, NR==b-1 {print $0}' $1 >> textFileTemp.txt
+# Veriables that represent the upper and down limits of the text file
+firstLine="$(grep -n "$start" $1 | head -n 1 | cut -d: -f1)"
+lastLine="$(grep -n "$end" $1 | head -n 1 | cut -d: -f1)"
 
+# Creates a temporary text file that only contains the words that concern us
+awk -v a=$firstLine -v b=$lastLine 'NR==a+1, NR==b-1 {print $0}' $1 >> textFileTemp.txt
 
 # Stores the words of the file without duplicates
-WORDS=$(grep -o -E "(\w|')+" textFileTemp.txt | sed -e "s/'.*\$//" | sort -u -f)
+words=$(grep -o -E "(\w|')+" textFileTemp.txt | sed -e "s/'.*\$//" | sort -u -f)
 
 # Array that will contain the words
-WORD_ARRAY=()
+wordArray=()
 # Array that will contain the number of appearnces for each word 
-NUM_ARRAY=()
+numArray=()
 
 # Accessing all the words from the file
-for WORD in $WORDS
+for word in $words
 do
-    # Number of apperences of the WORD in the text file ($1)
-    APEARENCES=`grep -o -i "$WORD" textFileTemp.txt | wc -l`
+    # Number of apperences of the word in the text file ($1)
+    apearences=`grep -o -i "$word" textFileTemp.txt | wc -l`
 
     # Appending each word and the number of it's appearnces
     # to the coresponding array
-    WORD_ARRAY+=( $WORD )
-    NUM_ARRAY+=( $APEARENCES )
+    wordArray+=( $word )
+    numArray+=( $apearences )
 done
 
 # Deleting the temp text file
 rm textFileTemp.txt
 
 # Sorting the arrays
-bubble_sort "${NUM_ARRAY[@]}" "${WORD_ARRAY[@]}"
+bubble_sort "${numArray[@]}" "${wordArray[@]}"
 
 # Printing the top ($LEN) words with most appearences
-if [ $2 -lt ${#WORD_ARRAY[@]} ]
+if [ $2 -lt ${#wordArray[@]} ]
 then
     LEN=$2
 else
-    LEN=${#WORD_ARRAY[@]}
+    LEN=${#wordArray[@]}
     
 fi
 
 for ((i=0; i<$LEN; i++))
 do
-    echo "${NUM_ARRAY[$i]} ${WORD_ARRAY[$i]}"
+    echo "${numArray[$i]} ${wordArray[$i]}"
 done
