@@ -52,9 +52,19 @@ then
     exit 1
 fi
 
+# Start reading the file
+START="*** START OF THIS PROJECT GUTENBERG EBOOK"
+
+# Stop reading the file
+END="*** END OF THIS PROJECT GUTENBERG EBOOK"
+
+FIRST_LINE="$(grep -n "$START" $1 | head -n 1 | cut -d: -f1)"
+LAST_LINE="$(grep -n "$END" $1 | head -n 1 | cut -d: -f1)"
+awk -v a=$FIRST_LINE -v b=$LAST_LINE 'NR==a+1, NR==b-1 {print $0}' $1 >> textFileTemp.txt
+
 
 # Stores the words of the file without duplicates
-WORDS=$(grep -o -E "(\w|')+" $1 | sed -e "s/'.*\$//" | sort -u -f)
+WORDS=$(grep -o -E "(\w|')+" textFileTemp.txt | sed -e "s/'.*\$//" | sort -u -f)
 
 # Array that will contain the words
 WORD_ARRAY=()
@@ -65,13 +75,16 @@ NUM_ARRAY=()
 for WORD in $WORDS
 do
     # Number of apperences of the WORD in the text file ($1)
-    APEARENCES=`grep -o -i "$WORD" $1 | wc -l`
+    APEARENCES=`grep -o -i "$WORD" textFileTemp.txt | wc -l`
 
     # Appending each word and the number of it's appearnces
     # to the coresponding array
     WORD_ARRAY+=( $WORD )
     NUM_ARRAY+=( $APEARENCES )
 done
+
+# Deleting the temp text file
+rm textFileTemp.txt
 
 # Sorting the arrays
 bubble_sort "${NUM_ARRAY[@]}" "${WORD_ARRAY[@]}"
