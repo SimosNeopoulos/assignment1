@@ -53,7 +53,7 @@ then
 fi
 
 
-#Stores the words of the file without dublicates
+#Stores the words of the file without duplicates
 WORDS=`grep -o -E '\w+' $1 | sort -u -f`
 
 #Array that will contain the words
