@@ -1,8 +1,7 @@
 #! /usr/bin/bash
 
 #Bubble Sort function
-function bubble_sort()
-{   
+function bubble_sort {   
     local MAX=${#NUM_ARRAY[@]}
     SIZE=${#NUM_ARRAY[@]}
     while ((MAX > 0))
@@ -29,8 +28,19 @@ function bubble_sort()
     done
 }
 
+function help() {
+    echo "Help script to write"
+    exit
+}
+
+if [ $1 == "-h" ] || [ $1 == "--help" ]
+then
+    help
+    exit 0
+fi
+
 #Stores the words of the file without dublicates
-WORDS="$(grep -o -E '\w+' $1 | sort -u -f)"
+WORDS=`grep -o -E '\w+' $1 | sort -u -f`
 
 #Array that will contain the words
 WORD_ARRAY=()
@@ -41,7 +51,7 @@ NUM_ARRAY=()
 for WORD in $WORDS
 do
     #Number of apperences of the WORD in the text file ($1)
-    APEARENCES="$(grep -o -i "$WORD" $1 | wc -l)"
+    APEARENCES=`grep -o -i "$WORD" $1 | wc -l`
 
     #Appending each word and the number of it's appearnces
     #to the coresponding array
