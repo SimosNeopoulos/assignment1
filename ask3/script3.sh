@@ -1,52 +1,5 @@
 #! /usr/bin/bash
 
-# Bubble Sort function
-function bubble_sort {   
-    local max=${#numArray[@]}
-    size=${#numArray[@]}
-    while ((max > 0))
-    do
-        local i=0
-        while ((i < max))
-        do
-            if [ "$i" != "$(($size-1))" ] 
-            then
-                if [ ${numArray[$i]} \< ${numArray[$((i + 1))]} ]
-                   then
-                   local temp=${numArray[$i]}
-                   numArray[$i]=${numArray[$((i + 1))]}
-                   numArray[$((i + 1))]=$temp
-                    
-                   local temp2=${wordArray[$i]}
-                   wordArray[$i]=${wordArray[$((i + 1))]}
-                  wordArray[$((i + 1))]=$temp2
-                 fi
-             fi
-            ((i += 1))
-        done
-        ((max -= 1))
-    done
-}
-
-#function bubble_sort {
-#    local size=${#numArray[@]}
-#    for ((i=0; i<$((size-1)); i++ ))
-#    do
-#        for ((j=0; j<$((size-i-1)); j++))
-#        do
-#            if [ ${numArray[$j]} \< ${numArray[$((j + 1))]} ]
-#            then
-#                local temp=${numArray[$j]}
-#                numArray[$j]=${numArray[$((j + 1))]}
-#                numArray[$((j + 1))]=$temp#
-#
-#                local temp2=${wordArray[$j]}
-#                wordArray[$j]=${wordArray[$((j + 1))]}
- #               wordArray[$((j + 1))]=$temp2
- ##           fi
-#        done
- #   done
-#}
 
 # Function that prints help message to command line and then terminates the program
 function help {
@@ -78,10 +31,10 @@ then
     exit 1
 fi
 
-# Start reading the file
+# The upper limit of the file
 start="*** START OF THIS PROJECT GUTENBERG EBOOK"
 
-# Stop reading the file
+# The down limit of the file
 end="*** END OF THIS PROJECT GUTENBERG EBOOK"
 
 # Veriables that represent the upper and down limits of the text file
@@ -89,44 +42,34 @@ firstLine="$(grep -n "$start" $1 | head -n 1 | cut -d: -f1)"
 lastLine="$(grep -n "$end" $1 | head -n 1 | cut -d: -f1)"
 
 # Creates a temporary text file that only contains the words that concern us
-awk -v a=$firstLine -v b=$lastLine 'NR==a+1, NR==b-1 {print $0}' $1 >> textFileTemp.txt
+awk -v a=$firstLine -v b=$lastLine 'NR==a+1, NR==b-1 {print $0}' $1 >> wordFile.txt
 
 # Stores the words of the file without duplicates
-words=$(grep -o -E "(\w|')+" textFileTemp.txt | sed -e "s/'.*\$//" | sort -u -f)
-
-# Array that will contain the words
-wordArray=()
-# Array that will contain the number of appearnces for each word 
-numArray=()
+words=$(grep -o -E "(\w|')+" wordFile.txt | sed -e "s/'.*\$//" | sort -u -f)
 
 # Accessing all the words from the file
 for word in $words
 do
-    # Number of apperences of the word in the text file ($1)
-    apearences=`grep -o -i "$word" textFileTemp.txt | wc -l`
+    # Number of apperences of the word in the text file (wordFile.txt)
+    apearences=`grep -o -i "$word" wordFile.txt | wc -l`
 
-    # Appending each word and the number of it's appearnces
-    # to the coresponding array
-    wordArray+=( $word )
-    numArray+=( $apearences )
+    # Printing each word and the number of it's appearences in the data.txt file
+    printf "%s %s\n" $apearences $word >> data.txt
 done
 
 # Deleting the temp text file
-rm textFileTemp.txt
+rm wordFile.txt
 
-# Sorting the arrays
-bubble_sort "${numArray[@]}" "${wordArray[@]}"
+# Appending the sorted text from data.txt to sorted.txt
+sort -nr data.txt >> sorted.txt
 
-# Printing the top ($LEN) words with most appearences
-if [ $2 -lt ${#wordArray[@]} ]
-then
-    LEN=$2
-else
-    LEN=${#wordArray[@]}
-    
-fi
+# Deleting data text file
+rm data.txt
 
-for ((i=0; i<$LEN; i++))
-do
-    echo "${numArray[$i]} ${wordArray[$i]}"
-done
+# Printing 
+awk -v end=$2 'NR==1, NR==end {print $2, $1}' sorted.txt
+
+# Deleting sorted text file
+rm sorted.txt
+
+exit 0
