@@ -28,16 +28,30 @@ function bubble_sort {
     done
 }
 
+#Function that prints help message to command line and then terminates the program
 function help() {
     echo "Help script to write"
-    exit
+    exit 0
 }
 
-if [ $1 == "-h" ] || [ $1 == "--help" ]
+
+#Checks wheter the user is asking for help
+if [ "$1" == "-h" ]
 then
     help
     exit 0
+# Checks if both command line arguments where provided
+elif [ -z "$1" ] || [ -z "$2" ]
+then
+    echo "Command line parameters not provided or incorect. Program terminated"
+    exit 1
+#Checks whether text file provided in the command line exists
+elif [ ! -f "$1" ]
+then
+    echo "Could not find a text file. Program terminated"
+    exit 1
 fi
+
 
 #Stores the words of the file without dublicates
 WORDS=`grep -o -E '\w+' $1 | sort -u -f`
