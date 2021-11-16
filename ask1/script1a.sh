@@ -25,6 +25,9 @@ do
         continue
     fi
 
+    # If the data1a directory doesn't exist it is created here
+    [ ! -d "./data1a" ] && mkdir data1a
+
     # Boolean veriable that indivates whether a url with the same name
     # as the one intereted now is already stored
     found=false
