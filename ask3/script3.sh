@@ -43,7 +43,7 @@ read=false
 
 # Reads the text file that has been passed as argument in the command line
 # and appends all the lines that are within bounds to the wordFile.txt file..
-while IFS= read -r line
+while IFS= read -r line || [[ -n "$line" ]]
 do
   if $read
   then
@@ -97,7 +97,7 @@ rm data.txt
 count=0
 
 # Printing the results
-while IFS= read -r line
+while IFS= read -r line || [[ -n "$line" ]]
 do
     message=$(tac -s " " <<< "$line" )
     echo  $message
