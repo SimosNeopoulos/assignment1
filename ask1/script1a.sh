@@ -10,7 +10,6 @@ do
     i=1
     for file in ./data1a/URL*.txt
     do
-        
         i=$(($i+1))
     done
 done < "$1"
