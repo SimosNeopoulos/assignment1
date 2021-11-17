@@ -31,7 +31,7 @@ function append {
 }
 
 function create {
-    randName=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 3)
+    randName=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 5)
     echo "$1" > "./data1b/URL$randName.txt" 
     wget -q -O - "$1" >> "./data1b/URL$randName.txt" && echo "$1 INIT" || error "$1"
 }
