@@ -13,6 +13,9 @@ function compare {
     fi
 }
 
+# If the data1a directory doesn't exist it is created here
+[ ! -d "./data1a" ] && mkdir data1a
+
 # A while loop that goes threw all the lines from the text file in the
 # command line argument. If the line doesn't have a url (the line starts with "#")
 # it skips this line
@@ -23,9 +26,6 @@ do
     then
         continue
     fi
-
-    # If the data1a directory doesn't exist it is created here
-    [ ! -d "./data1a" ] && mkdir data1a
 
     # Boolean veriable that indivates whether a url with the same name
     # as the one intereted now is already stored
@@ -43,8 +43,10 @@ do
         if [[ "$line" == "$url" ]]
         then
             found=true
+            
             # Getting the hash from the file before it's contents are refreshed
             prevHash=$(md5sum "$file")
+
             # Reriting the url to the text file
             echo "$url" > "$file"
 
