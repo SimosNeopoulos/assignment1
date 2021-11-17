@@ -3,7 +3,6 @@
 # Function that prints error mesage and terminates the program
 function error {
     echo "$1 FAILED" >/dev/stderr
-    exit 1
 }
 
 # Function that prints the url if a change has occured
@@ -49,15 +48,25 @@ do
             # Reriting the url to the text file
             echo "$url" > "$file"
 
+            # Veriable that indicated whether there was an error with the url or not
+            failed=false
+
             # Getting the content from the current url ($url) and appends it to "$file"
-            # If an error occurs during the execution an error message occurs
-            wget -q -O - "$url" >> "$file" || error "$line"
+            # If an error occurs during the execution the veriable "failed" is set to "true"
+            wget -q -O - "$url" >> "$file" || failed=true
 
             # Getting the hash from the file after it's contents are refreshed
             newHash=$(md5sum "$file")
 
-            # Calling the compare function for these 3 veriables
-            compare "$prevHash" "$newHash" "$line"
+            # If an error was raised with the url download then an error message is printed.
+            # If not the old hash, from the url's page, and the new are compered and an appropriate
+            # message is printed.
+            if $failed
+            then
+                error "$line"
+            else
+                compare "$prevHash" "$newHash" "$line"
+            fi
             break
         fi
         done
