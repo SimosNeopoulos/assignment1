@@ -66,6 +66,19 @@ function check {
     wait
 }
 
+
+# Checks if a command line argument was provided
+if [ -z "$1" ]
+then
+    echo "Command line parameters not provided or incorect. Program terminated"
+    exit 1
+# Checks whether text file provided in the command line exists
+elif [ ! -r "$1" ]
+then
+    echo "Could not find a text file. Program terminated"
+    exit 1
+fi
+
 # If the data1b directory doesn't exist it is created here
 [ ! -d "./data1b" ] && mkdir data1b
 

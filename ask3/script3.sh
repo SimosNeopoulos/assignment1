@@ -19,7 +19,7 @@ if [ "$1" == "-h" ] || [ "$1" == "--help" ]
 then
     help
     exit 0
-# Checks if both command line arguments where provided
+# Checks if both command line arguments were provided
 elif [ -z "$1" ] || [ -z "$2" ]
 then
     echo "Command line parameters not provided or incorect. Program terminated"
