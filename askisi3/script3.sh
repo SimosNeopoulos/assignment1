@@ -42,18 +42,18 @@ end="*** END OF THIS PROJECT GUTENBERG EBOOK"
 read=false
 
 # Reads the text file that has been passed as argument in the command line
-# and appends all the lines that are within bounds to the wordFile.txt file..
+# and appends all the lines that are within bounds to the __wordFile.txt file..
 while IFS= read -r line || [[ -n "$line" ]]
 do
   if $read
   then
     # When we reach the down bounds the loop breaks.
-    # Else the current line is appended to the wordFile.txt file
+    # Else the current line is appended to the __wordFile.txt file
     if [[ "$line" == *"$end"* ]]
     then
         break
     else
-        echo "$line" >> wordFile.txt
+        echo "$line" >> __wordFile.txt
         continue
     fi
   fi
@@ -72,26 +72,26 @@ done < "$1"
 
 
 # Stores the words of the file without duplicates
-words=$(grep -o -E "(\w|')+" wordFile.txt | sed -e "s/'.*\$//" | sort -u -f)
+words=$(grep -o -E "(\w|')+" __wordFile.txt | sed -e "s/'.*\$//" | sort -u -f)
 
 # Accessing all the words from the file
 for word in $words
 do
-    # Number of apperences of the word in the text file (wordFile.txt)
-    apearences=`grep -w -o -i "$word" wordFile.txt | wc -l`
+    # Number of apperences of the word in the text file (__wordFile.txt)
+    apearences=`grep -w -o -i "$word" __wordFile.txt | wc -l`
 
-    # Printing each word and the number of it's appearences in the data.txt file
-    printf "%s %s\n" $apearences $word >> data.txt
+    # Printing each word and the number of it's appearences in the __dataFile.txt file
+    printf "%s %s\n" $apearences $word >> __dataFile.txt
 done
 
 # Deleting the temp text file
-rm wordFile.txt
+rm __wordFile.txt
 
-# Appending the sorted text from data.txt to sorted.txt
-sort -nr data.txt >> sorted.txt
+# Appending the __sortedFile text from __dataFile.txt to __sortedFile.txt
+sort -nr __dataFile.txt >> __sortedFile.txt
 
-# Deleting data text file
-rm data.txt
+# Deleting __dataFile text file
+rm __dataFile.txt
 
 # Counter that breaks the while loop once enought lines have been printed
 count=0
@@ -106,9 +106,9 @@ do
     then
         break
     fi
-done < sorted.txt
+done < __sortedFile.txt
 
-# Deleting sorted text file
-rm sorted.txt
+# Deleting __sortedFile text file
+rm __sortedFile.txt
 
 exit 0
