@@ -18,6 +18,22 @@ function unzip {
     
 }
 
+function failed_clone {
+    echo "$2: Cloning FAILED" >/dev/stderr
+    rm -r "$1"
+}
+
+function add_repoes {
+    local -n __repo_urls=$1
+    [ ! -d "./assignments" ] && mkdir assignments
+
+    for repo in "${__repo_urls[@]}"; do
+        num=$(($(ls ./assignments| wc -l)+1))
+        mkdir ./assignments/repository$num
+        git clone "$repo" ./assignments/repository$num &>/dev/null && echo "$repo: Cloning OK" || failed_clone "./assignments/repository$num" "$repo"
+    done
+
+}
 
 # Checks if a command line argument was provided
 if [ -z "$1" ]
@@ -54,7 +70,4 @@ done
 # zipped file were unziped and it's contents
 rm -r _unzipingLocation
 
-for repo in "${repo_urls[@]}"; do
-    # Add code to iterate the repositories and clone them here
-    echo "$repo"
-done
+add_repoes repo_urls
