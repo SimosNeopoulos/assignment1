@@ -36,17 +36,19 @@ function add_repoes {
     # Iterating trough the repositories urls
     for repo in "${__repo_urls[@]}"; do
 
-        # How many repositories already exist
-        num=$(($(ls ./assignments| wc -l)+1))
-        mkdir ./assignments/repository$num
-        git clone "$repo" ./assignments/repository$num &>/dev/null && echo "$repo: Cloning OK" || failed_clone "./assignments/repository$num" "$repo"
+        # Getting the name of the https
+        name=${repo%.git}
+        name=${name##*/}
+        mkdir ./assignments/$name
+        git clone "$repo" ./assignments/$name &>/dev/null && echo "$repo: Cloning OK" || failed_clone "./assignments/$name" "$repo"
     done
 
 }
 
-
+# Prints the number of directories, .txt and other files, 
+# along side with whether the repository format is correct
 function printNums {
-    echo "$repo:"
+    echo "$5:"
     echo "Number of directories : $1"
     echo "Number of txt files : $2"
     echo "Number of other files : $3"
@@ -94,21 +96,61 @@ done
 rm -r _unzipingLocation
 
 # Calling "add_repoes" to create and add repositories
-#add_repoes repo_urls
+add_repoes repo_urls
 
+# Arrays that contain the correct format for the repositories
+content_main=( . .. dataA.txt .git more )
+more_content=( . .. dataB.txt dataC.txt )
+
+# Itearing through all the stored repositories
 for repo in ./assignments/*; do
+
+    # Boolean veriable that indicates whether the format of the repository is correct
     stracture=true
+
+    # Veriables that represent the number of directories, .txt files and other files inside the $repo repository
     dir_num=$(($(find $repo -name .git -prune -o -type d -print| wc -l)-1))
     text_num=$(find $repo -name .git -prune -o -type f -name "*.txt" -print| wc -l)
     non_text_num=$(find $repo -name .git -prune -o -type f ! -name '*.txt' -print| wc -l)
     
+    # Checking to see if the repository has the right number if directories and files
     if [ $dir_num -ne 1 ] || [ $text_num -ne 3 ] || [ $non_text_num -ne 0 ]; then
         stracture=false
     fi
     
+    # If the format isn't correct it calls "printNums" to print the apropriate message
     if ! $stracture; then
-        printNums "$dir_num" "$text_num" "$non_text_num" "$stracture" "$repo"
+        printNums "$dir_num" "$text_num" "$non_text_num" "$stracture" "${repo##*/}"
         continue
     fi
-    printNums "$dir_num" "$text_num" "$non_text_num" "$stracture" "$repo"
+
+    i=0
+
+    # Sotring the content of the current $repo and the content of the "more" directory inside the $repo
+    contentA=$(ls -a $repo)
+    contentB=$(ls -a $repo/more)
+
+    # Itareting through the $repo directory to check if the format is correct
+    for file in $contentA; do
+        if [[ "$file" != "${content_main[i]}" ]]; then
+            stracture=false
+            break
+        fi
+        ((i=i+1))
+    done
+
+    # Itareting through $repo's more directory to check if the format is correct
+    if $stracture; then
+        i=0
+        for file in $contentB; do
+            if [[ "$file" != "${more_content[i]}" ]]; then
+                stracture=false
+                break
+            fi
+            ((i=i+1))
+        done
+    fi
+
+    # Calling "printNums" to print the apropriate message
+    printNums "$dir_num" "$text_num" "$non_text_num" "$stracture" "${repo##*/}"
 done
