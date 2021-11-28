@@ -44,6 +44,20 @@ function add_repoes {
 
 }
 
+
+function printNums {
+    echo "$repo:"
+    echo "Number of directories : $1"
+    echo "Number of txt files : $2"
+    echo "Number of other files : $3"
+
+    if $4; then
+        echo "Directory structure is OK"
+    else
+        echo "Directory structure is NOT OK"
+    fi
+}
+
 # Checks if a command line argument was provided
 if [ -z "$1" ]
 then
@@ -92,9 +106,9 @@ for repo in ./assignments/*; do
         stracture=false
     fi
     
-    if $stracture; then
-        echo "It follows structure"
-    else 
-        echo "It doesn't"
+    if ! $stracture; then
+        printNums "$dir_num" "$text_num" "$non_text_num" "$stracture" "$repo"
+        continue
     fi
+    printNums "$dir_num" "$text_num" "$non_text_num" "$stracture" "$repo"
 done
