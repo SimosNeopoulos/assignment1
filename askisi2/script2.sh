@@ -80,4 +80,21 @@ done
 rm -r _unzipingLocation
 
 # Calling "add_repoes" to create and add repositories
-add_repoes repo_urls
+#add_repoes repo_urls
+
+for repo in ./assignments/*; do
+    stracture=true
+    dir_num=$(($(find $repo -name .git -prune -o -type d -print| wc -l)-1))
+    text_num=$(find $repo -name .git -prune -o -type f -name "*.txt" -print| wc -l)
+    non_text_num=$(find $repo -name .git -prune -o -type f ! -name '*.txt' -print| wc -l)
+    
+    if [ $dir_num -ne 1 ] || [ $text_num -ne 3 ] || [ $non_text_num -ne 0 ]; then
+        stracture=false
+    fi
+    
+    if $stracture; then
+        echo "It follows structure"
+    else 
+        echo "It doesn't"
+    fi
+done
