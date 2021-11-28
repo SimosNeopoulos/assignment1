@@ -18,16 +18,25 @@ function unzip {
     
 }
 
+# Prints appropriate error message and deletes the repo folder that was created
 function failed_clone {
     echo "$2: Cloning FAILED" >/dev/stderr
     rm -r "$1"
 }
 
+# Creates "assignments" directory if it doesn't already exits.
+# It then adds the repositories to a folder and prints an appropriate message
 function add_repoes {
+    # Array with the repository urls
     local -n __repo_urls=$1
+
+    # Checking if "asignments" directory exists. It then creates it if it doesn't
     [ ! -d "./assignments" ] && mkdir assignments
 
+    # Iterating trough the repositories urls
     for repo in "${__repo_urls[@]}"; do
+
+        # How many repositories already exist
         num=$(($(ls ./assignments| wc -l)+1))
         mkdir ./assignments/repository$num
         git clone "$repo" ./assignments/repository$num &>/dev/null && echo "$repo: Cloning OK" || failed_clone "./assignments/repository$num" "$repo"
@@ -70,4 +79,5 @@ done
 # zipped file were unziped and it's contents
 rm -r _unzipingLocation
 
+# Calling "add_repoes" to create and add repositories
 add_repoes repo_urls
