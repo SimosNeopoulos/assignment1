@@ -7,20 +7,17 @@ function error {
 
 # Function that prints the url if a change has occured
 function compare {
-    if [[ "$1" != "$2" ]]
-    then
-    echo "$3"
+    if [[ "$1" != "$2" ]]; then
+        echo "$3"
     fi
 }
 
 # Checks if a command line argument was provided
-if [ -z "$1" ]
-then
+if [ -z "$1" ]; then
     echo "Command line parameters not provided or incorect. Program terminated"
     exit 1
 # Checks whether text file provided in the command line exists
-elif [ ! -r "$1" ]
-then
+elif [ ! -r "$1" ]; then
     echo "Could not find a text file. Program terminated"
     exit 1
 fi
@@ -32,11 +29,9 @@ fi
 # A while loop that goes through all the lines from the text file in the
 # command line argument. If the line doesn't have a url (the line starts with "#")
 # it skips this line
-while IFS= read -r line || [[ -n "$line" ]]
-do  
+while IFS= read -r line || [[ -n "$line" ]]; do  
     # If the line starts with a "#" it skips it
-    if [[ "$line" == *"#"* ]]
-    then
+    if [[ "$line" == *"#"* ]]; then
         continue
     fi
 
@@ -52,8 +47,7 @@ do
         do
             # The url from the current file that was stored in the first line of the text file
             url=$(head -n 1 "$file")
-            if [[ "$line" == "$url" ]]
-            then
+            if [[ "$line" == "$url" ]]; then
                 found=true
             
                 # Getting the hash from the file before it's contents are refreshed
@@ -75,8 +69,7 @@ do
                 # If an error was raised with the url download then an error message is printed.
                 # If not the old hash, from the url's page, and the new are compered and an appropriate
                 # message is printed.
-                if $failed
-                then
+                if $failed; then
                     error "$line"
                 else
                     compare "$prevHash" "$newHash" "$line"
@@ -87,8 +80,7 @@ do
     fi
     
     # If the html from the current url was't stored already it is being initialised here
-    if ! $found
-    then
+    if ! $found; then
         # The number of files+1 in the data1a directory
         num=$(($(ls ./data1a| wc -l)+1))
 

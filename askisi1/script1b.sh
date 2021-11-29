@@ -8,9 +8,8 @@ function error {
 
 # Function that prints the url if a change has occured
 function compare {
-    if [[ "$1" != "$2" ]]
-    then
-    echo "$3"
+    if [[ "$1" != "$2" ]]; then
+        echo "$3"
     fi
 }
 
@@ -25,8 +24,7 @@ function append {
     echo "$_url" > "$_fileName"
     wget -q -O - "$_url" >> "$_fileName" || failed=true
     newHash=$(md5sum "$_fileName")
-    if $failed
-    then
+    if $failed; then
         error "$_url"
     else
         compare "$prevHash" "$newHash" "$_url"
@@ -46,8 +44,7 @@ function initialise {
     local -n _urls=$1
 
     # Iterting through _urls array and storing their data
-    for _url in ${_urls[@]}   
-    do 
+    for _url in ${_urls[@]}; do 
         create "$_url" &
     done
     wait
@@ -59,8 +56,7 @@ function check {
     local -n _urls=$1
     local -n _fileNames=$2
     local -i _num=${#_urls[@]}
-    for ((i=0; i<$_num; i++))
-    do
+    for ((i=0; i<$_num; i++)); do
         append "${_urls[$i]}" "${_fileNames[$i]}" &
     done
     wait
@@ -68,13 +64,11 @@ function check {
 
 
 # Checks if a command line argument was provided
-if [ -z "$1" ]
-then
+if [ -z "$1" ]; then
     echo "Command line parameters not provided or incorect. Program terminated"
     exit 1
 # Checks whether text file provided in the command line exists
-elif [ ! -r "$1" ]
-then
+elif [ ! -r "$1" ]; then
     echo "Could not find a text file. Program terminated"
     exit 1
 fi
@@ -91,27 +85,23 @@ oldFileName=()
 # A while loop that goes through all the lines from the text file in the
 # command line argument. If the line doesn't have a url (the line starts with "#")
 # it skips this line
-while IFS= read -r line || [[ -n "$line" ]]
-do
+while IFS= read -r line || [[ -n "$line" ]]; do
     # Boolean veriable that indivates whether a url with the same name
     # as the one intereted now is already stored
     found=false
 
     # If the line starts with a "#" it skips it
-    if [[ "$line" == *"#"* ]]
-    then
+    if [[ "$line" == *"#"* ]]; then
         continue
     else
         # Checks if the "data1b" directory is empty
-        if [ ! -z "$(ls -A ./data1b)" ]
-        then
+        if [ ! -z "$(ls -A ./data1b)" ]; then
             # Iterating through the text files in the data1a directory
             for file in ./data1b/URL*.txt
             do
                 # The url from the current file that was stored in the first line of the text file
                 url=$(head -n 1 "$file")
-                if [[ "$line" == "$url" ]]
-                then
+                if [[ "$line" == "$url" ]]; then
                     found=true
                     oldURLs+=( "$line" )
                     oldFileName+=( "$file" )
@@ -120,8 +110,7 @@ do
             done
         fi
         # If the html from the current url was't stored already it's url address is added to "newURLs" array
-        if ! $found
-        then
+        if ! $found; then
             newURLs+=( "$line" )
         fi
     fi

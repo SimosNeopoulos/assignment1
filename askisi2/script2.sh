@@ -36,9 +36,10 @@ function add_repoes {
     # Iterating trough the repositories urls
     for repo in "${__repo_urls[@]}"; do
 
-        # Getting the name of the https
+        # Cutting the string to get the name of the repository
         name=${repo%.git}
         name=${name##*/}
+
         mkdir ./assignments/$name
         git clone "$repo" ./assignments/$name &>/dev/null && echo "$repo: Cloning OK" || failed_clone "./assignments/$name" "$repo"
     done
@@ -61,8 +62,7 @@ function printNums {
 }
 
 # Checks if a command line argument was provided
-if [ -z "$1" ]
-then
+if [ -z "$1" ]; then
     echo "Command line parameters not provided or incorect. Program terminated"
     exit 1
 fi
