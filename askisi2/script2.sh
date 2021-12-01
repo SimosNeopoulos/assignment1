@@ -105,6 +105,10 @@ more_content=( . .. dataB.txt dataC.txt )
 # Itearing through all the stored repositories
 for repo in ./assignments/*; do
 
+    # Checking if the assignments directory is empty
+    # If it is, the loop breaks
+    [ "$(ls -A ./assignments)" ] || break
+
     # Boolean veriable that indicates whether the format of the repository is correct
     stracture=true
 
